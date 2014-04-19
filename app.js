@@ -125,4 +125,10 @@ app.utility.workflow = require('drywall-workflow');
 //listen up
 app.server.listen(app.get('port'), function(){
   //and... we're live
+  console.log("Here we can add the socket");
+
+  var api = require("./api/socket.js");
+
+  api.startAPI();
 });
+

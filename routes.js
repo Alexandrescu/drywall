@@ -164,6 +164,9 @@ exports = module.exports = function(app, passport) {
   app.get('/account/settings/google/callback/', require('./views/account/settings/index').connectGoogle);
   app.get('/account/settings/google/disconnect/', require('./views/account/settings/index').disconnectGoogle);
 
+  //api debug
+  //app.get('/debug', require('./api/debug').init);
+
   //route not found
   app.all('*', require('./views/http/index').http404);
 };

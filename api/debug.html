@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript">
+            var socketio = io.connect("http://localhost:1337");
+
+            socketio.on("news", function(data) {
+                document.getElementById("chatlog").innerHTML = ("<hr/>" +
+                data['hello'] + document.getElementById("chatlog").innerHTML);
+            });
+
+            function sendMessage() {
+                var msg = document.getElementById("message_input").value;
+                socketio.emit("pulse", {message : msg});
+            }
+        </script>
+    </head>
+    <body>
+        <input type="text" id="message_input"/>
+        <button onclick="sendMessage()">send</button>
+        <div id="chatlog"></div>
+    </body>
+</html>
