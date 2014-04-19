@@ -1,22 +1,24 @@
-function debug() {
-	var http = require('http'),	fs = require('fs');
+function startAPI(app, mongoose, passport) {
 
-	function theServer(request, response) {
-		fs.readFile("./api/debug.html", 'utf-8', function (error, data) {
-	        response.writeHead(200, {'Content-Type': 'text/html'});
-	        response.write(data);
-	        response.end();
-	    });
-	}
-	var returnValue = http.createServer(theServer).listen(1337);
-	return returnValue;
-}
+	var io = require ('socket.io').listen(app.server);
 
-function startAPI() {
-	var debugServer = debug();
-	var io = require ('socket.io').listen(debugServer);
+	//Degut view
+	app.get('/debug', function (req, res) {
+  		res.sendfile(__dirname + '/debug.html');
+	});
 
-	require('./events')(io);
+
+/*
+	//Creating post handler for login
+	api.post('/login', events.login);
+
+	//Loding the events
+	events = require('./events');
+
+	//events for this socket and mongoose instance
+	events(io, mongoose);
+*/
+
 }
 
 module.exports.startAPI = startAPI;

@@ -129,6 +129,6 @@ app.server.listen(app.get('port'), function(){
 
   var api = require("./api/socket.js");
 
-  api.startAPI();
+  api.startAPI(app, mongoose, passport);
 });
 

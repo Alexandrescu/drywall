@@ -165,7 +165,15 @@ exports = module.exports = function(app, passport) {
   app.get('/account/settings/google/disconnect/', require('./views/account/settings/index').disconnectGoogle);
 
   //api debug
-  //app.get('/debug', require('./api/debug').init);
+  app.get('/debug', function (req, res) {
+      res.sendfile('./api/debug.html');
+  });
+  app.get('/debug/', function (req, res) {
+      res.sendfile('./api/debug.html');
+  });
+
+  //API
+  app.post('/api/login/', require('./api/events').login);
 
   //route not found
   app.all('*', require('./views/http/index').http404);
