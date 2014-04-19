@@ -3,7 +3,7 @@
     <head>
         <script src="/socket.io/socket.io.js"></script>
         <script type="text/javascript">
-            var socketio = io.connect("http://localhost:1337");
+            var socketio = io.connect("http://localhost:3000");
 
             socketio.on("news", function(data) {
                 document.getElementById("chatlog").innerHTML = ("<hr/>" +

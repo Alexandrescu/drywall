@@ -173,7 +173,10 @@ exports = module.exports = function(app, passport) {
   });
 
   //API
-  app.post('/api/login/', require('./api/events').login);
+  //app.post('/api/login/', require('./views/login/index').login);
+
+  app.get('/api/login/', passport.authenticate('bearer', { session: false }), require('./api/events').bLogin);
+  app.post('/api/login/', require('./api/events').bLogin);
 
   //route not found
   app.all('*', require('./views/http/index').http404);

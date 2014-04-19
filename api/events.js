@@ -1,18 +1,19 @@
-module.exports = function(io, mongoose) {
-
-	io.sockets.on('connection', function (socket) {
-	
+module.exports = function(io, mongoose, app) {
+  
+  io.sockets.on('connection', function (socket) {
+	  
 		socket.emit('news', {hello : 'hi'});
 	
 		//Debug purposes
 		socket.on('pulse', function(data) {
-		
-
 		});
 		
 	});
 };
 
+module.exports.bLogin = function(req, res) {
+  res.json(req.user);
+}
 
 module.exports.login = function(req, res){
   var workflow = req.app.utility.workflow(req, res);
@@ -74,7 +75,8 @@ module.exports.login = function(req, res){
   });
 
   workflow.on('attemptLogin', function() {
-    req._passport.instance.authenticate('local', function(err, user, info) {
+    req._passport.instance.authenticate('bearer', {session: false}, function(err, user, info) {
+      console.log("Flag");
       if (err) {
         return workflow.emit('exception', err);
       }
@@ -104,4 +106,3 @@ module.exports.login = function(req, res){
 
   workflow.emit('validate');
 };
-

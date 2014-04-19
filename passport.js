@@ -2,6 +2,7 @@
 
 exports = module.exports = function(app, passport) {
   var LocalStrategy = require('passport-local').Strategy,
+      BearerStrategy = require('passport-http-bearer').Strategy,
       TwitterStrategy = require('passport-twitter').Strategy,
       GitHubStrategy = require('passport-github').Strategy,
       FacebookStrategy = require('passport-facebook').Strategy,
@@ -14,7 +15,7 @@ exports = module.exports = function(app, passport) {
         conditions.username = username;
       }
       else {
-        conditions.email = username;
+        conditions.email = usernames;
       }
 
       app.db.models.User.findOne(conditions, function(err, user) {
@@ -40,6 +41,59 @@ exports = module.exports = function(app, passport) {
       });
     }
   ));
+
+  passport.use(new BearerStrategy(
+  //function(username, password, done) {
+  function (token, done) {
+  console.log(token);
+  var conditions = { isActive: 'yes' }; 
+  conditions.username = "andrei";
+  
+  app.db.models.User.findOne(conditions, function(err, user) {
+        if (err) {
+          return done(err);
+        }
+
+        if (!user) {
+          return done(null, false, { message: 'Unknown user' });
+        }
+
+        return done(null, user);
+      });
+}
+        
+        /*
+    var conditions = {};
+    if (username.indexOf('@') === -1) {
+      conditions.username = username;
+    }
+    
+    else {
+      conditions.email = username;
+    }
+    app.db.models.User.findOne(conditions, function(err, user) {
+      if (err) {
+        return done(err);
+      }
+
+      if (!user) {
+        return done(null, false, { message: 'Unknown user' });
+      }
+
+      app.db.models.User.validatePassword(password, user.password, function(err, isValid) {
+        if (err) {
+          return done(err);
+        }
+
+        if (!isValid) {
+          return done(null, false, { message: 'Invalid password' });
+        }
+
+        return done(null, user);
+      });
+    });*/
+  ));
+  
 
   if (app.get('twitter-oauth-key')) {
     passport.use(new TwitterStrategy({
