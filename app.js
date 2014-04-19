@@ -121,6 +121,7 @@ app.utility = {};
 app.utility.sendmail = require('drywall-sendmail');
 app.utility.slugify = require('drywall-slugify');
 app.utility.workflow = require('drywall-workflow');
+app.utility.apiflow = require('apiworkflow');
 
 //listen up
 app.server.listen(app.get('port'), function(){

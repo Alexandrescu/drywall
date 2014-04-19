@@ -16,7 +16,8 @@ module.exports.bLogin = function(req, res) {
 }
 
 module.exports.login = function(req, res){
-  var workflow = req.app.utility.workflow(req, res);
+  console.log("this one");
+  var workflow = req.app.utility.apiflow(req, res);
 
   workflow.on('validate', function() {
     if (!req.body.username) {
@@ -75,8 +76,8 @@ module.exports.login = function(req, res){
   });
 
   workflow.on('attemptLogin', function() {
-    req._passport.instance.authenticate('bearer', {session: false}, function(err, user, info) {
-      console.log("Flag");
+    req._passport.instance.authenticate('local', function(err, user, info) {
+      
       if (err) {
         return workflow.emit('exception', err);
       }
@@ -97,7 +98,8 @@ module.exports.login = function(req, res){
           if (err) {
             return workflow.emit('exception', err);
           }
-
+          workflow.outcome.user.token = user.token;
+          workflow.outcome.user.username = user.username;
           workflow.emit('response');
         });
       }

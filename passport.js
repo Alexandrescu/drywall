@@ -1,15 +1,17 @@
 'use strict';
 
+
+
 exports = module.exports = function(app, passport) {
-  var LocalStrategy = require('passport-local').Strategy,
+  var BasicStrategy = require('passport-http').BasicStrategy,
+      LocalStrategy = require('passport-local').Strategy,
       BearerStrategy = require('passport-http-bearer').Strategy,
       TwitterStrategy = require('passport-twitter').Strategy,
       GitHubStrategy = require('passport-github').Strategy,
       FacebookStrategy = require('passport-facebook').Strategy,
       GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
-  passport.use(new LocalStrategy(
-    function(username, password, done) {
+  function findUsers(username, password, done) {
       var conditions = { isActive: 'yes' };
       if (username.indexOf('@') === -1) {
         conditions.username = username;
@@ -39,15 +41,16 @@ exports = module.exports = function(app, passport) {
           return done(null, user);
         });
       });
-    }
-  ));
+  }
+
+  passport.use(new LocalStrategy(findUsers));
+  passport.use(new BasicStrategy(findUsers));
 
   passport.use(new BearerStrategy(
   //function(username, password, done) {
   function (token, done) {
-  console.log(token);
-  var conditions = { isActive: 'yes' }; 
-  conditions.username = "andrei";
+
+  var conditions = { token: token }; 
   
   app.db.models.User.findOne(conditions, function(err, user) {
         if (err) {
@@ -60,39 +63,9 @@ exports = module.exports = function(app, passport) {
 
         return done(null, user);
       });
-}
+  }
         
-        /*
-    var conditions = {};
-    if (username.indexOf('@') === -1) {
-      conditions.username = username;
-    }
-    
-    else {
-      conditions.email = username;
-    }
-    app.db.models.User.findOne(conditions, function(err, user) {
-      if (err) {
-        return done(err);
-      }
-
-      if (!user) {
-        return done(null, false, { message: 'Unknown user' });
-      }
-
-      app.db.models.User.validatePassword(password, user.password, function(err, isValid) {
-        if (err) {
-          return done(err);
-        }
-
-        if (!isValid) {
-          return done(null, false, { message: 'Invalid password' });
-        }
-
-        return done(null, user);
-      });
-    });*/
-  ));
+));
   
 
   if (app.get('twitter-oauth-key')) {

@@ -7,8 +7,6 @@ function startAPI(app, mongoose, passport) {
 
 	//events for this socket and mongoose instance
 	events(io, mongoose);
-
-	app.post('/api/login/', events.login);
 }
 
 module.exports.startAPI = startAPI;
