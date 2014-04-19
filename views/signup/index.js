@@ -80,23 +80,28 @@ exports.signup = function(req, res){
         return workflow.emit('exception', err);
       }
 
-      var fieldsToSet = {
-        isActive: 'yes',
-        username: req.body.username,
-        email: req.body.email.toLowerCase(),
-        password: hash,
-        search: [
-          req.body.username,
-          req.body.email
-        ]
-      };
-      req.app.db.models.User.create(fieldsToSet, function(err, user) {
-        if (err) {
-          return workflow.emit('exception', err);
-        }
+      require('crypto').randomBytes(48, function(ex, buf) {
+        var tokenValue = buf.toString('hex');
 
-        workflow.user = user;
-        workflow.emit('createAccount');
+        var fieldsToSet = {
+          isActive: 'yes',
+          username: req.body.username,
+          email: req.body.email.toLowerCase(),
+          password: hash,
+          search: [
+            req.body.username,
+            req.body.email
+          ],
+          token: tokenValue
+        };
+        req.app.db.models.User.create(fieldsToSet, function(err, user) {
+          if (err) {
+            return workflow.emit('exception', err);
+          }
+
+          workflow.user = user;
+          workflow.emit('createAccount');
+        });
       });
     });
   });
