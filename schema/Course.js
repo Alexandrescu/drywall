@@ -9,8 +9,7 @@ exports = module.exports = function(app, mongoose) {
         year : Number,
         department: {type: mongoose.Schema.Types.ObjectId, ref: 'University'},
         creator: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
-      },
-      unique : true
+      }
     },
     lectures : [{
       title: String,
