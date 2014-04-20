@@ -123,11 +123,14 @@ app.utility.slugify = require('drywall-slugify');
 app.utility.workflow = require('drywall-workflow');
 app.utility.apiflow = require('apiworkflow');
 
+
+var socketBasket = {};
+app.basket = socketBasket;
+
 //listen up
 app.server.listen(app.get('port'), function(){
   //and... we're live
   console.log("Here we can add the socket");
-
   var api = require("./api/socket.js");
 
   api.startAPI(app, mongoose, passport);

@@ -5,6 +5,11 @@
         <script type="text/javascript">
             var socketio = io.connect("http://localhost:3000");
 
+            var token = "token";
+            socketio.on("requestToken", function(data) {
+                socketio.emit("setToken", {token: token});
+            });
+
             socketio.on("news", function(data) {
                 document.getElementById("chatlog").innerHTML = ("<hr/>" +
                 data['hello'] + document.getElementById("chatlog").innerHTML);

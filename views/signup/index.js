@@ -66,20 +66,37 @@ exports.signup = function(req, res){
       }
 
       if (user) {
+        console.log(user);
         workflow.outcome.errfor.email = 'email already registered';
         return workflow.emit('response');
       }
-
-      workflow.emit('createUser');
+      workflow.emit('linkToUni');
     });
   });
 
-  workflow.on('createUser', function() {
+  workflow.on('linkToUni', function() {
+    var extension = req.body.email.toLowerCase().split('@')[1];
+    console.log(extension);
+    req.app.db.models.University.findOne({emailExtension: extension}, function(err, univ){
+      if(err) {
+        return workflow.emit('exception', err);
+      }
+      console.log(univ);
+      if(!univ) {
+        workflow.outcome.errfor.email = 'Email couldn\'t be linked with any University';
+        return workflow.emit('response');
+      }
+      
+      return workflow.emit('createUser', univ);    
+      
+    });
+  });
+
+  workflow.on('createUser', function(institution) {
     req.app.db.models.User.encryptPassword(req.body.password, function(err, hash) {
       if (err) {
         return workflow.emit('exception', err);
       }
-
       require('crypto').randomBytes(48, function(ex, buf) {
         var tokenValue = buf.toString('hex');
 
@@ -92,7 +109,8 @@ exports.signup = function(req, res){
             req.body.username,
             req.body.email
           ],
-          token: tokenValue
+          token: tokenValue,
+          institution: [institution._id]
         };
         req.app.db.models.User.create(fieldsToSet, function(err, user) {
           if (err) {

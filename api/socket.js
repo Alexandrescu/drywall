@@ -6,7 +6,7 @@ function startAPI(app, mongoose, passport) {
 	events = require('./events');
 
 	//events for this socket and mongoose instance
-	events(io, mongoose);
+	events(io, mongoose, app);
 }
 
 module.exports.startAPI = startAPI;

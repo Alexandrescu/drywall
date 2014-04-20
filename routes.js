@@ -175,11 +175,18 @@ exports = module.exports = function(app, passport) {
   //API
   //app.post('/api/login/', require('./views/login/index').login);
 
-  app.get('/api/auth/', passport.authenticate('bearer', { session: false }), require('./api/events').bLogin);
-  app.post('/api/auth/', passport.authenticate('bearer', { session: false }), require('./api/events').bLogin);
+  app.get('/api/auth/', passport.authenticate('bearer', { session: false }), require('./api/events').checkToken);
+  app.post('/api/auth/', passport.authenticate('bearer', { session: false }), require('./api/events').checkToken);
 
   app.get('/api/login/', require('./api/events').login);
   app.post('/api/login/', require('./api/events').login);
+  
+  app.get('/api/getCourses/', passport.authenticate('bearer', { session: false }), require('./api/queries').getCourses);
+  app.post('/api/getCourses/', passport.authenticate('bearer', { session: false }), require('./api/queries').getCourses);
+
+
+  app.get('/api/postCourse/', passport.authenticate('bearer', { session: false }), require('./api/queries').postCourse);
+  app.post('/api/postCourse/', passport.authenticate('bearer', { session: false }), require('./api/queries').postCourse);
   //route not found
   app.all('*', require('./views/http/index').http404);
 };
