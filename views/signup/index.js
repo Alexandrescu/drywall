@@ -100,10 +100,18 @@ exports.signup = function(req, res){
       require('crypto').randomBytes(48, function(ex, buf) {
         var tokenValue = buf.toString('hex');
 
+        var isLecturer = false;
+        console.log(req.body);
+        if(req.body.isLecturer) {
+          console.log("IsLecturer");
+          isLecturer = true;
+        }
+
         var fieldsToSet = {
           isActive: 'yes',
           username: req.body.username,
           email: req.body.email.toLowerCase(),
+          "roles.lecturer": isLecturer,
           password: hash,
           search: [
             req.body.username,

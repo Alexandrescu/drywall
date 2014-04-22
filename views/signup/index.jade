@@ -69,4 +69,8 @@ block body
         input.form-control(type='password', name='password', value!='<%= password %>')
         span.help-block <%- errfor.password %>
       div.form-group
+      label.checkbox 
+        input(name='isLecturer',type='checkbox')
+        |  Are you a lecturer?
+      div.form-group
         button.btn.btn-primary.btn-signup(type='button') Create My Account

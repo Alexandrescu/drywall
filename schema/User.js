@@ -6,6 +6,7 @@ exports = module.exports = function(app, mongoose) {
     password: String,
     email: { type: String, unique: true },
     roles: {
+      lecturer: Boolean,
       admin: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' },
       account: { type: mongoose.Schema.Types.ObjectId, ref: 'Account' }
     },

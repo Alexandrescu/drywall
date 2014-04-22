@@ -1,5 +1,5 @@
 module.exports.getCourses = function (req, res) {
-  var workflow = req.app.utility.workflow(req, res);
+  var workflow = req.app.utility.apiflow(req, res);
 
   workflow.on('validate', function() {
 
@@ -8,7 +8,7 @@ module.exports.getCourses = function (req, res) {
   		if(err) 
   			return workflow.emit('exception', err);
 
-  		workflow.outcome.errfor.questions = questions;
+  		workflow.outcome.response.questions = questions;
   		workflow.emit('response');
   	});
   });
@@ -51,7 +51,7 @@ module.exports.postCourse = function (req, res) {
       }
 
       if (course) {
-        workflow.outcome.errfor.email = 'Course already entered';
+        workflow.outcome.errfor.course = 'Course already exists';
         return workflow.emit('response');
       }
       workflow.emit('createCourse');
@@ -64,7 +64,9 @@ module.exports.postCourse = function (req, res) {
       	name : req.body.courseName,
       	year : req.body.year,
       	department: req.user.institution[0],
-      	creator: req.user._id
+      	creator: req.user._id,
+      	/* this needs to be modified */
+      	pdf: ""
       }
   	};
     req.app.db.models.Course.create(fieldsToSet, function(err, course) {

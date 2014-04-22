@@ -8,7 +8,8 @@ exports = module.exports = function(app, mongoose) {
         name : String,
         year : Number,
         department: {type: mongoose.Schema.Types.ObjectId, ref: 'University'},
-        creator: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
+        creator: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+        pdf: String
       }
     },
     lectures : [{

@@ -118,8 +118,8 @@ module.exports.login = function(req, res){
           if (err) {
             return workflow.emit('exception', err);
           }
-          workflow.outcome.user.token = user.token;
-          workflow.outcome.user.username = user.username;
+          workflow.outcome.response.token = user.token;
+          workflow.outcome.response.username = user.username;
           workflow.emit('response');
         });
       }
