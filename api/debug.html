@@ -6,7 +6,9 @@
             var socketio = io.connect("http://localhost:3000");
 
             var token = "09d4521023e02e39080b59c666e9851ece36da649ccac03bc93f011a4a64995f761a6b1660698aa87e263233ecdd7fe8";
-            var lectureId = "5356dff23769351004d15b17";
+            //var token = "token";
+            var lectureId = "5356ec5c624b4a301e569091";
+            var questionId = "5356ed4337f74d3832ef57b3";
 
             socketio.emit("setData", {token: token, lectureId: lectureId});
             function addQuestion () {
@@ -25,7 +27,12 @@
             }
 
             function vote() {
-                socketio.emit('addVote', {questionId : "5356e01f3769351004d15b18"});
+                socketio.emit('addVote', {questionId : questionId});
+            }
+
+            function addAnswer() {
+                var answer = document.getElementById("answer").value;
+                socketio.emit('addAnswer', {questionId : questionId, answer:answer });
             }
         </script>
     </head>
@@ -47,6 +54,9 @@
         <input type="text" id="message_input"/>
         <button onclick="addQuestion()">send</button>
         <button onclick="vote()">vote</button>
+        <hr/>
+        <input type="text" id="answer"/>
+        <button onclick="addAnswer()">answer</button>
         <div id="chatlog"></div>
     </body>
 </html>

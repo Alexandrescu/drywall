@@ -26,6 +26,7 @@ module.exports = function(io, mongoose, app) {
             if(err) return;
             if(lecture) {
               /* Lecture if valid */
+              console.log(lecture);
               var fieldsToSet = {
                 content: data.content,
                 slideNumber: data.slideNumber,
@@ -65,6 +66,31 @@ module.exports = function(io, mongoose, app) {
             }
             else console.log("Already exists");
           });
+        });
+      }
+    });
+
+    socket.on('addAnswer', function(data){
+      if(clients[socket.id] && data.hasOwnProperty("questionId") && data.hasOwnProperty("answer")) {
+        var client = clients[socket.id];
+
+        if(!client.hasOwnProperty("token") && !client.hasOwnProperty("lectureId") ) return;
+
+        app.db.models.User.findOne({token: client.token}, function(err, user) {
+          if(user)
+            // Valid user
+            app.db.models.Course.findOne({lectures: client.lectureId}, function(err, course) {
+              if(course && course.creator.equals(user._id)) {
+                // He has permission to answer on this lecture
+                app.db.models.Lecture.findOne({questions: data.questionId}, function(err, lecture) {
+                  if(lecture)
+                    //This question is part of this lecture
+                    app.db.models.Question.findOneAndUpdate({_id:data.questionId}, {$set : {answer: data.answer}}, {safe: true, upsert: true}, function(err, question){
+                      if(err) return;
+                    });
+                });
+              }
+            });
         });
       }
     });

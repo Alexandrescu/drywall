@@ -4,7 +4,7 @@ module.exports.getCourses = function (req, res) {
   workflow.on('validate', function() {
 
   	workflow.user = req.user;
-  	req.app.db.models.Course.find({"details.department": {$in : req.user.institution }}, function(err, courses){
+  	req.app.db.models.Course.find({department: {$in : req.user.institution }}, function(err, courses){
   		if(err) 
   			return workflow.emit('exception', err);
 
@@ -40,10 +40,10 @@ module.exports.postCourse = function (req, res) {
 
   workflow.on('duplicateCourseCheck', function() {
   	var fieldsToSet = {
-      "details.name": req.body.courseName,
-      "details.year": req.body.year,
-      "details.department": req.user.institution[0],
-      "details.creator": req.user._id
+      name: req.body.courseName,
+      year: req.body.year,
+      department: req.user.institution[0],
+      creator: req.user._id
   	};
   	
     req.app.db.models.Course.findOne(fieldsToSet, function(err, course) {
@@ -61,13 +61,11 @@ module.exports.postCourse = function (req, res) {
 
   workflow.on('createCourse', function() {
     var fieldsToSet = {
-      details: {
-      	name : req.body.courseName,
-      	year : req.body.year,
-      	department: req.user.institution[0],
-      	creator: req.user._id
-      }
-  	};
+      name: req.body.courseName,
+      year: req.body.year,
+      department: req.user.institution[0],
+      creator: req.user._id
+    };
     req.app.db.models.Course.create(fieldsToSet, function(err, course) {
     	if (err) {
         	return workflow.emit('exception', err);
@@ -131,7 +129,7 @@ module.exports.addLecture = function (req, res) {
         return workflow.emit('exception', err);
       }
 
-      if(!course.details.creator.equals(req.user._id)) {
+      if(!course.creator.equals(req.user._id)) {
         workflow.outcome.errfor.permission = 'denied';
         return workflow.emit('response');
       }

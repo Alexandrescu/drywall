@@ -3,14 +3,10 @@
 exports = module.exports = function(app, mongoose) {
 
   var courseSchema = new mongoose.Schema ({
-    details: {
-      type: {
-        name : String,
-        year : Number,
-        department: {type: mongoose.Schema.Types.ObjectId, ref: 'University'},
-        creator: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
-      }
-    },
+    name : String,
+    year : Number,
+    department: {type: mongoose.Schema.Types.ObjectId, ref: 'University'},
+    creator: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     lectures : [{  type: mongoose.SchemaTypes.ObjectId, ref: 'Lecture'  }]
   });
 
