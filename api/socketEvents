@@ -19,6 +19,7 @@ module.exports = function(io, mongoose, app) {
 
         console.log("Attempting to add new question");
         console.log(client);
+
         app.db.models.User.findOne({token: client.token}, function(err, user) {
           console.log(user);
 
@@ -31,13 +32,13 @@ module.exports = function(io, mongoose, app) {
 
           console.log(client.lectureId);
 
-          app.db.models.Course.findOne({ lectures: { $elemMatch: {_id: client.lectureId}}}, function(err, question) {
+          app.db.models.Lecture.findOne({ _id: client.lectureId}, function(err, question) {
             console.log(question);
           });
           
           
-          app.db.models.Course.findOneAndUpdate({ lectures: { $elemMatch: {_id: client.lectureId}}}, 
-            {$push: {"lectures.questions": fieldsToSet}},
+          app.db.models.Lecture.findOneAndUpdate({ _id: client.lectureId}, 
+            {$push: {questions: fieldsToSet}},
             {safe: true, upsert: true},
             function(err, model) {
               console.log(model);

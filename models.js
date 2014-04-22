@@ -17,4 +17,5 @@ exports = module.exports = function(app, mongoose) {
   //api docs
   require('./schema/University')(app, mongoose);
   require('./schema/Course')(app, mongoose);
+  require('./schema/Lecture')(app, mongoose);
 };

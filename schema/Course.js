@@ -11,18 +11,7 @@ exports = module.exports = function(app, mongoose) {
         creator: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
       }
     },
-    lectures : [{
-      title: String,
-      pdf: String,
-      questions: [{
-        content: String,
-        slideNumber: Number,
-        whoAsked: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}, 
-        answer: String,
-        votes: Number,
-        whoVoted: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}]
-      }]
-    }],
+    lectures : [{  type: mongoose.SchemaTypes.ObjectId, ref: 'Lecture'  }]
   });
 
   courseSchema.plugin(require('./plugins/pagedFind'));
@@ -31,6 +20,4 @@ exports = module.exports = function(app, mongoose) {
   /** Here I should add indexes for course */
 
   app.db.model('Course', courseSchema);
-  console.log("Goes here");
-
 };

@@ -100,18 +100,19 @@ module.exports.addLecture = function (req, res) {
 
   workflow.on('checkDuplicates', function () {
     var fieldsToSet = {
-      _id: req.body.courseId,
-      "lectures.title": req.body.lectureTitle
+      _id: req.body.courseId
+      //lectures.title: req.body.lectureTitle
     };
 
-    req.app.db.models.Course.findOne(fieldsToSet, function(err, course) {
+    req.app.db.models.Course.findOne(fieldsToSet).populate("lectures", "title").exec(function(err, course) {
       if(err) {
         return workflow.emit('exception', err);
       }
-      if(course) {
-        workflow.outcome.errfor.lectureTitle = 'Aleardy exists.';
-      }
 
+      course.lectures.forEach(function(entry) {
+        if(entry.title == req.body.lectureTitle)
+          workflow.outcome.errfor.lectureTitle = 'Aleardy exists.';  
+      });
 
       if(workflow.hasErrors()) {
         return workflow.emit('response');
@@ -144,17 +145,23 @@ module.exports.addLecture = function (req, res) {
         questions: []
       };
 
-      req.app.db.models.Course.findByIdAndUpdate(course._id, 
-        {$push: {lectures : lecture}}, 
-        {safe: true, upsert: true},
-        function(err, model) {
-          if(err) {
-            return workflow.emit('exception', err);
-          }
-        }
-      );
+      req.app.db.models.Lecture.create(lecture, function(err, newLecture){
+        if(err) 
+          return workflow.emit('exception', err);
 
-      workflow.emit('response');
+        req.app.db.models.Course.findByIdAndUpdate(course._id, 
+          {$push: {lectures : newLecture._id}}, 
+          {safe: true, upsert: true},
+          function(err, model) {
+            if(err) {
+              return workflow.emit('exception', err);
+            }
+
+      
+            workflow.emit('response');
+          }
+        );
+      });
     });
   });
 
