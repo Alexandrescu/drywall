@@ -124,7 +124,7 @@ app.utility.workflow = require('drywall-workflow');
 app.utility.apiflow = require('apiworkflow');
 
 
-var socketBasket = {};
+var socketBasket = [];
 app.basket = socketBasket;
 
 //listen up

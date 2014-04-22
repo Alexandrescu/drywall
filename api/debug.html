@@ -5,10 +5,12 @@
         <script type="text/javascript">
             var socketio = io.connect("http://localhost:3000");
 
-            var token = "token";
-            socketio.on("requestToken", function(data) {
-                socketio.emit("setToken", {token: token});
-            });
+            var token = "09d4521023e02e39080b59c666e9851ece36da649ccac03bc93f011a4a64995f761a6b1660698aa87e263233ecdd7fe8";
+            //var lectureId = "53564d88e5b3df38201a4648";
+            var lectureId = "53568c29540d053c16544933";
+
+            socketio.emit("setData", {token: token, lectureId: lectureId});
+            socketio.emit('addQuestion', {content: "Is this lecture working?", slideNumber: 5});
 
             socketio.on("news", function(data) {
                 document.getElementById("chatlog").innerHTML = ("<hr/>" +

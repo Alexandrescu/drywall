@@ -2,7 +2,7 @@
 
 exports = module.exports = function(app, mongoose) {
 
-  var courseSchema = new mongoose.Schema ({
+  var lectureSchema = new mongoose.Schema ({
     details: {
       type: {
         name : String,

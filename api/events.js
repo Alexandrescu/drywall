@@ -1,32 +1,3 @@
-module.exports = function(io, mongoose, app) {
-  var clients = app.basket;
-
-  io.sockets.on('connection', function (socket) {
-	  socket.emit('requestToken');
-
-    socket.on('setToken', function(data) {
-      clients[socket.id] = data.token;
-      for(entry in clients) {
-        console.log(entry + " has token " + clients[entry]);  
-      }
-      
-    });
-
-
-		socket.emit('news', {hello : 'hi'});
-	
-		//Debug purposes
-		socket.on('pulse', function(data) {
-      socket.emit('news', {hello : data.message});
-    });
-
-    socket.on('disconnect', function() {
-      delete clients[socket.id];
-    });
-		
-	});
-};
-
 module.exports.checkToken = function(req, res) {
   res.json(req.user);
 }

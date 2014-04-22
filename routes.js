@@ -187,6 +187,9 @@ exports = module.exports = function(app, passport) {
 
   app.get('/api/postCourse/', passport.authenticate('bearer', { session: false }), require('./api/queries').postCourse);
   app.post('/api/postCourse/', passport.authenticate('bearer', { session: false }), require('./api/queries').postCourse);
+
+  app.get('/api/postLecture/', passport.authenticate('bearer', { session: false }), require('./api/queries').addLecture);
+  app.post('/api/postLecture/', passport.authenticate('bearer', { session: false }), require('./api/queries').addLecture);
   //route not found
   app.all('*', require('./views/http/index').http404);
 };

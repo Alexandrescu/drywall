@@ -1,0 +1,66 @@
+module.exports = function(io, mongoose, app) {
+  var clients = app.basket;
+
+  io.sockets.on('connection', function (socket) {
+	  socket.emit('requestData');
+
+    socket.on('setData', function(data) {
+      clients[socket.id] = data;
+
+      for(entry in clients) {
+        console.log(entry + " has token " + clients[entry].token + " and lectureId " + clients[entry].lectureId);  
+      }
+      
+    });
+
+    socket.on('addQuestion', function(data) {
+      if(clients[socket.id] != false && data.content != false && data.slideNumber != false) {
+        var client = clients[socket.id];
+
+        console.log("Attempting to add new question");
+        console.log(client);
+        app.db.models.User.findOne({token: client.token}, function(err, user) {
+          console.log(user);
+
+          var fieldsToSet = {
+            content: data.content,
+            slideNumber: data.slideNumber,
+            whoAsked: user._id,
+            votes: 0
+          };
+
+          console.log(client.lectureId);
+
+          app.db.models.Course.findOne({ lectures: { $elemMatch: {_id: client.lectureId}}}, function(err, question) {
+            console.log(question);
+          });
+          
+          
+          app.db.models.Course.findOneAndUpdate({ lectures: { $elemMatch: {_id: client.lectureId}}}, 
+            {$push: {"lectures.questions": fieldsToSet}},
+            {safe: true, upsert: true},
+            function(err, model) {
+              console.log(model);
+            }
+          );
+          
+        });
+      }
+
+      
+
+    });
+
+		socket.emit('news', {hello : 'hi'});
+	
+		//Debug purposes
+		socket.on('pulse', function(data) {
+      socket.emit('news', {hello : data.message});
+    });
+
+    socket.on('disconnect', function() {
+      delete clients[socket.id];
+    });
+		
+	});
+};
