@@ -23,6 +23,10 @@
                 var msg = document.getElementById("message_input").value;
                 socketio.emit("pulse", {message : msg});
             }
+
+            function vote() {
+                socketio.emit('addVote', {questionId : "5356e01f3769351004d15b18"});
+            }
         </script>
     </head>
     <body>
@@ -42,6 +46,7 @@
 
         <input type="text" id="message_input"/>
         <button onclick="addQuestion()">send</button>
+        <button onclick="vote()">vote</button>
         <div id="chatlog"></div>
     </body>
 </html>

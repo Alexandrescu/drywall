@@ -14,20 +14,15 @@ module.exports = function(io, mongoose, app) {
     });
 
     socket.on('addQuestion', function(data) {
-      if(clients[socket.id] != false && data.content != false && data.slideNumber != false) {
+      if(clients[socket.id] && data.hasOwnProperty("content") && data.hasOwnProperty("slideNumber") ) {
         var client = clients[socket.id];
 
-        console.log("Attempting to add new question");
-        console.log(client);
+        if(!client.hasOwnProperty("token") && !client.hasOwnProperty("lectureId") ) return;
 
         app.db.models.User.findOne({token: client.token}, function(err, user) {
           /* User is valid */
-          console.log(user);
-          console.log(client.lectureId);
-
           app.db.models.Lecture.findOne({ _id: client.lectureId}, function(err, lecture) {
-            console.log(lecture);
-
+            
             if(err) return;
             if(lecture) {
               /* Lecture if valid */
@@ -44,6 +39,31 @@ module.exports = function(io, mongoose, app) {
                 lecture.save();
               });
             }
+          });
+        });
+      }
+    });
+
+    socket.on('addVote', function(data) {
+      if(clients[socket.id] && data.hasOwnProperty("questionId")) {
+        var client = clients[socket.id];
+
+        if(!client.hasOwnProperty("token") && !client.hasOwnProperty("lectureId") ) return;
+
+        app.db.models.User.findOne({token: client.token}, function(err, user) {
+          /* User is valid */
+
+          app.db.models.Question.findById(data.questionId, function(err, question) {
+            console.log('founded');
+            if(err) return;
+
+            if(question && question.whoVoted.indexOf(user._id) == -1) {
+              console.log('voting');
+              question.votes++;
+              question.whoVoted.push(user._id);
+              question.save();
+            }
+            else console.log("Already exists");
           });
         });
       }
