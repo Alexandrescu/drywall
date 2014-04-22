@@ -21,35 +21,32 @@ module.exports = function(io, mongoose, app) {
         console.log(client);
 
         app.db.models.User.findOne({token: client.token}, function(err, user) {
+          /* User is valid */
           console.log(user);
-
-          var fieldsToSet = {
-            content: data.content,
-            slideNumber: data.slideNumber,
-            whoAsked: user._id,
-            votes: 0
-          };
-
           console.log(client.lectureId);
 
-          app.db.models.Lecture.findOne({ _id: client.lectureId}, function(err, question) {
-            console.log(question);
-          });
-          
-          
-          app.db.models.Lecture.findOneAndUpdate({ _id: client.lectureId}, 
-            {$push: {questions: fieldsToSet}},
-            {safe: true, upsert: true},
-            function(err, model) {
-              console.log(model);
+          app.db.models.Lecture.findOne({ _id: client.lectureId}, function(err, lecture) {
+            console.log(lecture);
+
+            if(err) return;
+            if(lecture) {
+              /* Lecture if valid */
+              var fieldsToSet = {
+                content: data.content,
+                slideNumber: data.slideNumber,
+                whoAsked: user._id,
+                votes: 0
+              };
+
+              app.db.models.Question.create(fieldsToSet, function(err, question){
+                if(err) return;
+                lecture.questions.push(question._id);
+                lecture.save();
+              });
             }
-          );
-          
+          });
         });
       }
-
-      
-
     });
 
 		socket.emit('news', {hello : 'hi'});

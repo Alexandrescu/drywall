@@ -5,14 +5,7 @@ exports = module.exports = function(app, mongoose) {
   var lectureSchema = new mongoose.Schema ({
     title: String,
     pdf: String,
-    questions: [{
-      content: String,
-      slideNumber: Number,
-      whoAsked: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}, 
-      answer: String,
-      votes: Number,
-      whoVoted: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}]
-    }]
+    questions: [ {type: mongoose.Schema.Types.ObjectId, ref: 'Question'} ]
   });
 
   lectureSchema.index({ title: 1 });
@@ -21,5 +14,4 @@ exports = module.exports = function(app, mongoose) {
   /** Here I should add indexes for the lectures */
 
   app.db.model('Lecture', lectureSchema);
-  console.log("Goes here");
 };
