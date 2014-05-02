@@ -3,12 +3,7 @@
 exports = module.exports = function(app, mongoose) {
 
   var questionSchema = new mongoose.Schema ({
-    content: String,
-    slideNumber: Number,
-    whoAsked: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}, 
-    answer: String,
-    votes: Number,
-    whoVoted: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}]
+    content: String
   });
 
   questionSchema.index({ content: 1 });

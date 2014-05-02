@@ -127,6 +127,9 @@ app.utility.apiflow = require('apiworkflow');
 var socketBasket = [];
 app.basket = socketBasket;
 
+var liveLectures = [];
+app.liveLectures = liveLectures;
+
 //listen up
 app.server.listen(app.get('port'), function(){
   //and... we're live

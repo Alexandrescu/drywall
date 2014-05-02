@@ -4,7 +4,11 @@ module.exports.getCourses = function (req, res) {
   workflow.on('validate', function() {
 
   	workflow.user = req.user;
-  	req.app.db.models.Course.find({department: {$in : req.user.institution }}, function(err, courses){
+  	req.app.db.models.Course.find({department: {$in : req.user.institution }}).
+    populate("department").
+    populate("creator", "username").
+    populate("lectures").
+    exec(function(err, courses){
   		if(err) 
   			return workflow.emit('exception', err);
 
@@ -140,6 +144,7 @@ module.exports.addLecture = function (req, res) {
       var lecture = {
         title: req.body.lectureTitle,
         pdf: "",
+        course: course._id,
         questions: []
       };
 

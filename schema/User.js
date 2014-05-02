@@ -12,6 +12,7 @@ exports = module.exports = function(app, mongoose) {
     },
     institution: [{type: mongoose.Schema.Types.ObjectId, ref: 'University' }],
     token: String,
+    coursesSubscribed: [{type:mongoose.Schema.Types.ObjectId, ref: 'Course'}],
     isActive: String,
     timeCreated: { type: Date, default: Date.now },
     resetPasswordToken: String,
