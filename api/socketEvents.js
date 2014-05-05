@@ -19,7 +19,7 @@ module.exports = function(io, mongoose, app) {
 
               if(lecture.course.creator.token == data.token) {
                 socket.set(data.lectureId, socket.id);
-                liveLectures[data.lectureId] = true;
+                liveLectures[data.lectureId] = socket.id;
 
                 socket.broadcast.emit('lectureLive', {lectureId: data.lectureId});
                 console.log("reaches");
@@ -41,7 +41,7 @@ module.exports = function(io, mongoose, app) {
         errors : []
       };
         
-      if(data.hasOwnProperty("token") && data.hasOwnProperty("lectureId") && liveLectures[data.lectureId]){
+      if(data.hasOwnProperty("token") && data.hasOwnProperty("lectureId") && liveLectures.hasOwnProperty(data.lectureId)){
         clients[socket.id] = data;
 
         for(entry in clients) {
@@ -64,8 +64,10 @@ module.exports = function(io, mongoose, app) {
           return socket.emit('questions', response);
         });
       }
-      else response.errors.push({notFound: "property or lecture"});
-      socket.emit('questions', response);
+      else {
+        response.errors.push({notFound: "Property or live lecture"});
+        socket.emit('questions', response);
+      }
     });
 
 
@@ -112,6 +114,7 @@ module.exports = function(io, mongoose, app) {
                     lecture.questions.push(newQuestion);
                     lecture.save();
                     response.success = true;
+                    io.sockets.socket(liveLectures[client.lectureId]).emit("newQuestion", newQuestion);
                   }
                   else response.errors.push({notFound : "question"});
 
@@ -145,8 +148,13 @@ module.exports = function(io, mongoose, app) {
       
       if(client)    
         socket.get(client.lectureId, function(err, socketId){
-          if(socketId == socket.id)
+          if(socketId == socket.id) {
             delete liveLectures[client.lectureId];
+            for(entry in clients) {
+              if(clients[entry].lectureId == client.lectureId) 
+                io.sockets.socket(entry).emit("lecturerDead", {});
+            }
+          }
         });
 
       delete clients[socket.id];

@@ -10,41 +10,43 @@
             var lectureId = "536155e3a237c8a41ec643a6";
             var questionId = "536154425b0b8767f5e6d2eb";
 
-            socketio.emit("setLive", {token: token, lectureId: lectureId});
+            function setLive() {
+                socketio.emit("setLive", {token: token, lectureId: lectureId});    
+            }
             
             function setData() {
                 socketio.emit("connectLecture", {token: token, lectureId: lectureId});
-            }
-
-            function addQuestion () {
-                var theContent = document.getElementById("message_input").value;
-                socketio.emit('addQuestion', {content: theContent, slideNumber: 5});
             }
 
             socketio.on("news", function(data) {
                 document.getElementById("chatlog").innerHTML = ("<hr/>" +
                 data['hello'] + document.getElementById("chatlog").innerHTML);
             });
-
+            
+            socketio.on("newQuestion", function(data) {
+                document.getElementById("newQuestion").innerHTML += JSON.stringify(data, undefined, 2);
+            });
+            
             socketio.on("questions", function(data) {
-                document.getElementById("questions").innerHTML = JSON.stringify(data, undefined, 2);;
+                document.getElementById("questions").innerHTML = JSON.stringify(data, undefined, 2);
+                document.getElementById("byeLecturer").innerHTML = "";
             });
 
             socketio.on("responseAddQuestion", function (data) {
-                document.getElementById("questionsReply").innerHTML = JSON.stringify(data, undefined, 2);;
+                document.getElementById("questionsReply").innerHTML = JSON.stringify(data, undefined, 2);
             });
 
-            function sendMessage() {
-                var msg = document.getElementById("message_input").value;
-                socketio.emit("pulse", {message : msg});
-            }
-
-            function vote() {
-                socketio.emit('addVote', {questionId : questionId});
-            }
+            socketio.on("lecturerDead", function (data) {
+                document.getElementById("byeLecturer").innerHTML = "Lecturer down.";
+            });
 
             function addAnswer() {
                 socketio.emit('addQuestion', {questionId : questionId, slideNumber: 1, height: 10});
+            }
+
+            function changeToken() {
+                alert(document.getElementById("token").value);
+                token = document.getElementById("token").value;
             }
         </script>
     </head>
@@ -63,14 +65,18 @@
             </div>
         </form>
 
-        <input type="text" id="message_input"/>
-        <button onclick="addQuestion()">send</button>
-        <button onclick="vote()">vote</button>
         <hr/>
-        <button onclick="addAnswer()">answer</button>
-        <button onclick="setData()">setData</button>
+        <h3>Add question - the quesiton id is already there. </h3>
+        <input type="text" id="token">
+        <button onclick="changeToken()">Change token </button> <br>
+        <button onclick="addAnswer()">Add question</button> <br>
+        <button onclick="setData()">Set Data</button><br>
+        <button onclick="setLive()">Set Lecture live</button>
+        <hr/>
         <div id="chatlog"></div>
         <pre id="questions"></pre>
         <pre id="questionsReply"></pre>
+        <pre id="newQuestion"></pre>
+        <pre id="byeLecturer"></pre>
     </body>
 </html>
