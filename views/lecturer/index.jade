@@ -1,0 +1,52 @@
+extends ../../layouts/lecturer
+
+block head
+  title Lecturer's Area
+
+block neck
+  link(rel='stylesheet', href='/views/lecturer/index.min.css?#{cacheBreaker}')
+  
+
+  link(rel='stylesheet', href='//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css')
+  link(href='//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', rel='stylesheet')
+  link(rel='stylesheet', href='/views/account/frontEnd/main.css')
+  link(rel='stylesheet', href='/views/account/frontEnd/styles.css')
+
+block feet
+  script(src='/views/lecturer/index.js?#{cacheBreaker}')
+  script(src='https://code.jquery.com/jquery-2.1.0.min.js')
+  script(src='//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js')
+
+block body
+  .content#content
+        .row
+          .col-md-6
+            h3 Courses
+            .courses
+            .row.courseops
+              .col-md-6
+                button#addCourse.btn.btn-success(type='submit')
+                  | Add Course
+              .col-md-6
+                button#deleteCourse.btn.btn-danger(type='submit', data-toggle='modal', data-target='#areYouSure')
+                  | Delete Course
+          .col-md-6
+            span#coursename(contentEditable = 'true')
+            .lectures
+            .row.lectureops(style='display: none;')
+              .col-md-6
+                button#addLecture.btn.btn-success(type='submit')
+                  | Add Lecture
+              .col-md-6
+                button#Bulkadd.btn.btn-warning(type='submit')
+                  | Save Changes
+
+  #areYouSure.modal.fade(tabindex='-1', role='dialog', aria-labelledby='mySmallModalLabel', aria-hidden='true')
+    .modal-dialog.modal-md
+      .modal-content
+        .modal-header Confirm Delete
+        .modal-body
+          | Are you certain you want to delete this course? (You can't undo this action)
+        .modal-footer
+          button#cancelDelete.btn.btn-default(data-dismiss='modal', style='float: left;') Cancel
+          button#confirmDelete.btn.btn-danger(data-dismiss='modal', style='float: right;') Delete Course

@@ -16,6 +16,18 @@ function ensureAdmin(req, res, next) {
   res.redirect('/');
 }
 
+function ensureLecturer(req, res, next) {
+  if (req.user.canPlayRoleOf('lecturer')) {
+    if (req.app.get('require-account-verification')) {
+      if (req.user.roles.account.isVerified !== 'yes' && !/^\/account\/verification\//.test(req.url)) {
+        return res.redirect('/account/verification/');
+      }
+    }
+    return next();
+  }
+  res.redirect('/');
+}
+
 function ensureAccount(req, res, next) {
   if (req.user.canPlayRoleOf('account')) {
     if (req.app.get('require-account-verification')) {
@@ -164,6 +176,18 @@ exports = module.exports = function(app, passport) {
   app.get('/account/settings/google/callback/', require('./views/account/settings/index').connectGoogle);
   app.get('/account/settings/google/disconnect/', require('./views/account/settings/index').disconnectGoogle);
 
+
+  //lecturer
+  app.all('/lecturer*', ensureAuthenticated);
+  app.all('/lecturer*', ensureLecturer);
+  app.get('/lecturer/', require('./views/lecturer/index').init);
+  
+  //lecturer > settings
+  app.get('/lecturer/settings/', require('./views/lecturer/settings/index').init);
+  app.put('/lecturer/settings/', require('./views/lecturer/settings/index').update);
+  app.put('/lecturer/settings/identity/', require('./views/lecturer/settings/index').identity);
+  app.put('/lecturer/settings/password/', require('./views/lecturer/settings/index').password);
+
   //api debug
   app.get('/debug', function (req, res) {
       res.sendfile('./api/debug.html');
@@ -184,6 +208,20 @@ exports = module.exports = function(app, passport) {
   app.get('/api/getCourses/', passport.authenticate('bearer', { session: false }), require('./api/queries').getCourses);
   app.post('/api/getCourses/', passport.authenticate('bearer', { session: false }), require('./api/queries').getCourses);
 
+
+  app.get('/getMyCourses/', ensureLecturer, require('./api/queries').getMyCourses);
+  app.post('/getMyCourses/', ensureLecturer, require('./api/queries').getMyCourses);
+
+  app.get('/postCourse/', ensureLecturer, require('./api/queries').postCourse);
+  app.post('/postCourse/', ensureLecturer, require('./api/queries').postCourse);
+
+
+  app.get('/postLecture/', ensureLecturer, require('./api/queries').addLecture);
+  app.post('/postLecture/', ensureLecturer, require('./api/queries').addLecture);
+
+
+  app.get('/updateCourse/', ensureLecturer, require('./api/queries').updateCourse);
+  app.post('/updateCourse/', ensureLecturer, require('./api/queries').updateCourse);
 
   app.get('/api/postCourse/', passport.authenticate('bearer', { session: false }), require('./api/queries').postCourse);
   app.post('/api/postCourse/', passport.authenticate('bearer', { session: false }), require('./api/queries').postCourse);

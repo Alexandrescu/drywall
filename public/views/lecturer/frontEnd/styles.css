@@ -1,0 +1,50 @@
+.course {
+	font-size:15px;
+	background:#e7e7e7;
+	padding:9px;
+	cursor:pointer;
+	//padding-left:15px;
+	margin-bottom:5px;
+}
+
+.course.selected {
+	background:royalblue;
+	color:white;
+}
+
+.lectureops, .courseops {
+	margin-top:30px;
+}
+
+.courseops div, .lectureops div {
+	text-align: center;
+}
+
+#coursename {
+	font-size:20px;
+	padding:2px;
+	border-bottom:1px solid #eee;
+}
+
+h3 {
+	margin-top:0px;
+	margin-bottom:10px;
+}
+
+.lectures {
+	margin-top:7px;
+}
+
+.lecture {
+	font-size:16px;
+	margin-bottom:5px;
+}
+
+.lecture .panel-heading {
+	height:40px;
+}
+
+.lecture div h4 a {
+	text-decoration: underline;
+	padding:1px;
+}

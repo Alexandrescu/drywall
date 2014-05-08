@@ -32,12 +32,20 @@ exports = module.exports = function(app, mongoose) {
       return true;
     }
 
+    if(role === "lecturer" && this.roles.lecturer) {
+      return true;
+    }
+
     return false;
   };
   userSchema.methods.defaultReturnUrl = function() {
     var returnUrl = '/';
     if (this.canPlayRoleOf('account')) {
       returnUrl = '/account/';
+    }
+
+    if (this.canPlayRoleOf('lecturer')) {
+      returnUrl = '/lecturer/';
     }
 
     if (this.canPlayRoleOf('admin')) {
