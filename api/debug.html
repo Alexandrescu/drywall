@@ -45,8 +45,15 @@
             }
 
             function changeToken() {
-                alert(document.getElementById("token").value);
                 token = document.getElementById("token").value;
+            }
+
+            function changeLecture() {
+                token = document.getElementById("lecId").value;
+            }
+
+            function changeQuestion() {
+                token = document.getElementById("qId").value;
             }
         </script>
     </head>
@@ -66,9 +73,15 @@
         </form>
 
         <hr/>
+
         <h3>Add question - the quesiton id is already there. </h3>
         <input type="text" id="token">
         <button onclick="changeToken()">Change token </button> <br>
+        <input type="text" id="lecId">
+        <button onclick="changeLecture()">Change lectureId </button> <br>
+        <input type="text" id="qId">
+        <button onclick="changeQuestion()">Change questionId </button> <br>
+
         <button onclick="addAnswer()">Add question</button> <br>
         <button onclick="setData()">Set Data</button><br>
         <button onclick="setLive()">Set Lecture live</button>

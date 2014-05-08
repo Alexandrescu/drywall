@@ -19,6 +19,7 @@ exports.signup = function(req, res){
   var workflow = req.app.utility.workflow(req, res);
 
   workflow.on('validate', function() {
+    console.log(req.body);
     if (!req.body.username) {
       workflow.outcome.errfor.username = 'required';
     }
@@ -102,7 +103,7 @@ exports.signup = function(req, res){
 
         var isLecturer = false;
         console.log(req.body);
-        if(req.body.isLecturer) {
+        if(req.body.isLecturer === 'true') {
           console.log("IsLecturer");
           isLecturer = true;
         }
