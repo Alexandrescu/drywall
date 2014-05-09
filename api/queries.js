@@ -182,6 +182,10 @@ module.exports.addLecture = function (req, res) {
       workflow.outcome.errfor.lectureTitle = 'required';
     }
 
+    if(!req.hasOwnProperty('files') || !req.files.pdf) {
+      workflow.outcome.errfor.pdf = 'required';
+    }
+
     if (workflow.hasErrors()) {
       return workflow.emit('response');
     }
@@ -232,10 +236,11 @@ module.exports.addLecture = function (req, res) {
       **/
       var lecture = {
         title: req.body.lectureTitle,
-        pdf: "",
         course: course._id,
         questions: []
       };
+
+
 
       req.app.db.models.Lecture.create(lecture, function(err, newLecture){
         if(err) 
@@ -248,9 +253,34 @@ module.exports.addLecture = function (req, res) {
             if(err) {
               return workflow.emit('exception', err);
             }
+            var fs = require('fs');
+            //Moving the file around
+              
 
-      
-            workflow.emit('response');
+            /* fs.rename(req.files.pdf.path, newPath, function (err) {
+              if (err) throw err;
+              console.log('renamed complete');
+
+              workflow.emit('response');
+            }); */
+
+            fs.readFile(req.files.pdf.path, function (err, data) {
+               if(err) {
+                  return workflow.emit('exception', err);
+                }
+              var newPath = __dirname + "\\uploads\\" + newLecture._id + ".pdf";
+              console.log(req.files.pdf.path);
+              console.log(newPath);
+              console.log(data);
+              fs.writeFile(newPath, data, function (err) {
+                if(err) {
+                  return workflow.emit('exception', err);
+                }
+                workflow.emit('response');
+                //res.redirect("back");
+              });
+            });
+
           }
         );
       });

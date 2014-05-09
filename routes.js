@@ -192,8 +192,8 @@ exports = module.exports = function(app, passport) {
   app.get('/debug', function (req, res) {
       res.sendfile('./api/debug.html');
   });
-  app.get('/debug/', function (req, res) {
-      res.sendfile('./api/debug.html');
+   app.get('/debug/', function (req, res) {
+      res.sendfile('./api/debug2.html');
   });
 
   //API
@@ -218,6 +218,9 @@ exports = module.exports = function(app, passport) {
 
   app.get('/postLecture/', ensureLecturer, require('./api/queries').addLecture);
   app.post('/postLecture/', ensureLecturer, require('./api/queries').addLecture);
+
+  //app.get('/postLecture/', require('./api/queries').addLecture);
+  //app.post('/postLecture/', require('./api/queries').addLecture);
 
 
   app.get('/updateCourse/', ensureLecturer, require('./api/queries').updateCourse);

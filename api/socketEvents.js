@@ -34,6 +34,7 @@ module.exports = function(io, mongoose, app) {
       }
     });
 
+    //This will add you to the lecture and give you back questions
     socket.on('connectLecture', function(data) {
       var response = {
         success: false,
@@ -60,6 +61,8 @@ module.exports = function(io, mongoose, app) {
 
           response.success = true;
           if(questions) response.result.question = questions;
+
+          response.result.lectures = JSON.stringify(liveLectures);
 
           return socket.emit('questions', response);
         });
@@ -105,7 +108,7 @@ module.exports = function(io, mongoose, app) {
                   }
                   if(foundedQuestion) {
                     var newQuestion = {
-                      question: foundedQuestion._id,
+                      question: foundedQuestion,
                       user: user._id,
                       height: data.height,
                       slideNumber: data.slideNumber

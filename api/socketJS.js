@@ -1,9 +1,4 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <script src="/socket.io/socket.io.js"></script>
-        <script type="text/javascript">
-            var socketio = io.connect("http://localhost:3000");
+var socketio = io.connect("http://localhost:3000");
 
             var token = "09d4521023e02e39080b59c666e9851ece36da649ccac03bc93f011a4a64995f761a6b1660698aa87e263233ecdd7fe8";
             //var token = "token";
@@ -49,47 +44,9 @@
             }
 
             function changeLecture() {
-                lectureId = document.getElementById("lecId").value;
+                token = document.getElementById("lecId").value;
             }
 
             function changeQuestion() {
-                questionId = document.getElementById("qId").value;
+                token = document.getElementById("qId").value;
             }
-        </script>
-    </head>
-    <body>
-        <form action="/api/login/" method="post">
-            <div>
-                <label>Username:</label>
-                <input type="text" name="username"/>
-            </div>
-            <div>
-                <label>Password:</label>
-                <input type="password" name="password"/>
-            </div>
-            <div>
-                <input type="submit" value="Log In"/>
-            </div>
-        </form>
-
-        <hr/>
-
-        <h3>Add question - the quesiton id is already there. </h3>
-        <input type="text" id="token">
-        <button onclick="changeToken()">Change token </button> <br>
-        <input type="text" id="lecId">
-        <button onclick="changeLecture()">Change lectureId </button> <br>
-        <input type="text" id="qId">
-        <button onclick="changeQuestion()">Change questionId </button> <br>
-
-        <button onclick="addAnswer()">Add question</button> <br>
-        <button onclick="setData()">Set Data</button><br>
-        <button onclick="setLive()">Set Lecture live</button>
-        <hr/>
-        <div id="chatlog"></div>
-        <pre id="questions"></pre>
-        <pre id="questionsReply"></pre>
-        <pre id="newQuestion"></pre>
-        <pre id="byeLecturer"></pre>
-    </body>
-</html>

@@ -10,26 +10,44 @@ var json;
 
 // when DOM elements have been made
 $(document).ready(function(){
-	$.ajax({
-	    'url': '../getMyCourses/',
-	    'data': {},
-	    'success': function(jsonData) {
-	      json = jsonData;
-	      courses = jsonData.response.courses;
-		  $.each(courses, function(index,item){
-		    var course = item.name;
-			$('.courses').append('<div class="course panel panel-default" courseIndex="'+index+'">'+course+'</div>');
-			$('.lectures').append('<div courseIndex="'+index+'"></div>');
-		  });
-	    },
-	});
+	
+		$.ajax({
+		    'url': '../getMyCourses/',
+		    'data': {},
+		    'success': function(jsonData) {
+		      json = jsonData;
+		      courses = jsonData.response.courses;
 
+			  $.each(courses, function(index,item){
+			    var course = item.name;
+				$('.courses').append('<div class="course panel panel-default" courseIndex="'+index+'">'+course+'</div>');
+				$('.lectures').append('<div courseIndex="'+index+'"></div>');
+			  });
+		    },
+		});
 	// Loads in the courses from the courses array
 	
 
 	// Eventlisteners on courses
 	$('#Bulkadd').click(function(){
-
+		if($('.course.selected').hasClass('new')) {
+			$.ajax({
+  			'type': "POST",
+		    'url': '../postCourse/',
+		    'data': {courseName: $('.course.selected').html(), year:2},
+		    'success': function(jsonData) {}
+		});
+		}
+		else {
+			//updating
+			$.ajax({
+			'type': "POST",
+		    'url': '../updateCourse/',
+		    'data': {action:"update", courseName: $('.course.selected').html(), courseId: courses[parseInt($('.course.selected').attr('courseIndex'))]._id},
+		    'success': function(jsonData) {
+		      
+			}});
+		}
 	});
 
 	$('.courses').on("click",".course",function(){
@@ -54,12 +72,13 @@ $(document).ready(function(){
 		$('.lectureops').show();
 	});
 	$('#addCourse').click(function(){
+
 		$.each($('.courses').children(), function(index,course){
 			$(course).removeClass('selected');
 		});
 
 		var id = courses.length;
-		var x = $.parseHTML('<div class="course panel panel-default selected" courseIndex="'+id+'">Unnamed Course</div>');
+		var x = $.parseHTML('<div class="new course panel panel-default selected" courseIndex="'+id+'">Unnamed Course</div>');
 		$('.courses').append(x);	
 		$('.course[courseIndex="'+id+'"]').trigger("click");
 
@@ -73,6 +92,12 @@ $(document).ready(function(){
 	});
 	//pulls up confirmDelete, doesn't actually delete
 	$('#deleteCourse').click(function(){
+		$.ajax({
+			'type': "POST",
+		    'url': '../updateCourse/',
+		    'data': {action:"delete", courseName: $('.course.selected').html(), courseId: courses[parseInt($('.course.selected').attr('courseIndex'))]._id},
+		    'success': function(jsonData) {
+		      
 		var findSelected = null;
 		$.each($('.courses').children(), function(index,course){
 			if($(course).hasClass('selected')){
@@ -90,6 +115,8 @@ $(document).ready(function(){
 			$('#confirmDelete').removeClass('btn-danger');
 			$('#confirmDelete').text("No Course Selected");
 		}
+			}});
+
 	});
 	$('#confirmDelete').click(function(){
 		var courseIndex = null;
@@ -145,6 +172,7 @@ $(document).ready(function(){
 	// Eventlisteners on lectures
 
 	$('#addLecture').click(function(){
+		alert( $('.course.selected').hasClass("new"));
 		/*jshint multistr: true */
 		var str = '\
 		<div class="panel panel-default lecture" lecture="'+lectures.length+'">\
@@ -159,7 +187,7 @@ $(document).ready(function(){
 		    <div id="'+lectures.length+'" class="panel-collapse collapse">\
 		     	<div class="panel-body">\
 		      		<input type="file" class="inputlecture"/><br/>\
-		      		<button class="btn btn-warning">Start lecture</button>\
+		      		<button id="startLecture" class="btn btn-warning">Start lecture</button>\
 		      		<button type="submit" id="deleteLecture" class="btn btn-danger" style="float:right">Delete Lecture</button>\
 		      	</div>\
 		    </div>\
@@ -186,6 +214,13 @@ $(document).ready(function(){
 		$(this).closest('.lecture').remove();
 	});
 	
+	$('.lectures').on('click','#startLecture',function(){
+		//for(var key in $(this).closest('.lecture').parent()) {
+		//  console.log(key);
+		//}
+
+		//alert(($(this).closest('.lecture')).parent().data('lecture'));
+	});
 });
 
 function selectText(element) {

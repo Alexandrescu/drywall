@@ -82,6 +82,8 @@ app.configure(function(){
   }));
   app.use(passport.initialize());
   app.use(passport.session());
+
+  app.use(express.multipart());
   helmet.defaults(app);
 
   //response locals

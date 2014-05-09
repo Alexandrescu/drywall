@@ -6,16 +6,16 @@ block head
 block neck
   link(rel='stylesheet', href='/views/account/index.min.css?#{cacheBreaker}')
   
-  link(rel='stylesheet', href='/views/account/frontEnd/main.css')
-  link(rel='stylesheet', href='/views/account/frontEnd/styles.css')
+
   link(rel='stylesheet', href='//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css')
   link(href='//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', rel='stylesheet')
+  link(rel='stylesheet', href='/views/account/frontEnd/main.css')
+  link(rel='stylesheet', href='/views/account/frontEnd/styles.css')
 
 block feet
-  script(src='/views/account/index.min.js?#{cacheBreaker}')
+  script(src='/views/account/index.js?#{cacheBreaker}')
   script(src='https://code.jquery.com/jquery-2.1.0.min.js')
   script(src='//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js')
-  script(src='/views/account/frontEnd/pageinteraction.min.js?#{cacheBreaker}')
 
 block body
   .content
