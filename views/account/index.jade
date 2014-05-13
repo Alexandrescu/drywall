@@ -1,7 +1,7 @@
 extends ../../layouts/account
 
 block head
-  title Account Area
+  title Students's Area
 
 block neck
   link(rel='stylesheet', href='/views/account/index.min.css?#{cacheBreaker}')
@@ -12,30 +12,19 @@ block neck
   link(rel='stylesheet', href='/views/account/frontEnd/main.css')
   link(rel='stylesheet', href='/views/account/frontEnd/styles.css')
 
+
 block feet
+  script(src='http://localhost:3000/socket.io/socket.io.js')
   script(src='/views/account/index.js?#{cacheBreaker}')
   script(src='https://code.jquery.com/jquery-2.1.0.min.js')
   script(src='//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js')
 
 block body
-  .content
-    .row
-      .col-md-8.col-md-offset-2
-        h3 Your Courses
-        .courses
-        .row.courseops
-          .col-md-12
-            input#courseNameSearch.form-control(type='text', placeholder='Search for a course at your university')
+  .content#content
         .row
-          .col-md-12.allcourses
-            | Loading courses
-
-  #areYouSure.modal.fade(tabindex='-1', role='dialog', aria-labelledby='mySmallModalLabel', aria-hidden='true')
-    .modal-dialog.modal-md
-      .modal-content
-        .modal-header Confirm Delete
-        .modal-body
-          | Are you certain you want to delete this course? (You can't undo this action)
-        .modal-footer
-          button#cancelDelete.btn.btn-default(data-dismiss='modal', style='float: left;') Cancel
-          button#confirmDelete.btn.btn-danger(data-dismiss='modal', style='float: right;') Delete Course
+          .col-md-6
+            h3 Courses
+            .courses
+          .col-md-6
+            span#coursename(contentEditable = 'false')
+            .lectures

@@ -219,12 +219,22 @@ exports = module.exports = function(app, passport) {
   app.get('/postLecture/', ensureLecturer, require('./api/queries').addLecture);
   app.post('/postLecture/', ensureLecturer, require('./api/queries').addLecture);
 
+
+  app.get('/updateLecture/', ensureLecturer, require('./api/queries').updateLecture);
+  app.post('/updateLecture/', ensureLecturer, require('./api/queries').updateLecture);
+
   //app.get('/postLecture/', require('./api/queries').addLecture);
   //app.post('/postLecture/', require('./api/queries').addLecture);
 
 
   app.get('/updateCourse/', ensureLecturer, require('./api/queries').updateCourse);
   app.post('/updateCourse/', ensureLecturer, require('./api/queries').updateCourse);
+
+  app.get('/getCourses/', ensureAccount, require('./api/queries').getCourses);
+  app.post('/getCourses/', ensureAccount, require('./api/queries').getCourses);
+
+  app.get('/getToken/', ensureAccount, require('./api/queries').getToken);
+  app.post('/getToken/', ensureAccount, require('./api/queries').getToken);
 
   app.get('/api/postCourse/', passport.authenticate('bearer', { session: false }), require('./api/queries').postCourse);
   app.post('/api/postCourse/', passport.authenticate('bearer', { session: false }), require('./api/queries').postCourse);

@@ -1,3 +1,66 @@
+module.exports.getToken = function(req, res) {
+  res.send({token: req.user.token});
+}
+
+module.exports.updateLecture = function (req, res) {
+  var workflow = req.app.utility.workflow(req, res);
+
+  workflow.on('validate', function (){
+    if(!req.body.lectureId) {
+      workflow.outcome.errfor.lectureId = 'required';
+    }
+
+    if(!req.body.lectureTitle) {
+      workflow.outcome.errfor.lectureTitle = 'required';
+    }
+
+    if(!req.body.action) {
+      workflow.outcome.errfor.action = 'required';
+    }
+
+    if (workflow.hasErrors()) {
+      return workflow.emit('response');
+    }
+    
+    workflow.emit('duplicateLectureCheck');
+  });
+
+  /* Need to add option to check if user is Lecturer */
+
+  workflow.on('duplicateLectureCheck', function() {
+    var fieldsToSet = {
+      _id: req.body.lectureId
+    };
+    
+    req.app.db.models.Lecture.findOne(fieldsToSet, function(err, lecture) {
+      if (err) {
+        return workflow.emit('exception', err);
+      }
+      if (!lecture) {
+        workflow.outcome.errfor.course = 'Lecture doesnt exists';
+        return workflow.emit('response');
+      }
+
+      if(req.body.action == "delete") {
+        lecture.remove();
+
+        return workflow.emit('response');
+      }
+
+      else if(req.body.action = "update") {
+
+        lecture.title = req.body.lectureTitle;
+        lecture.save();
+
+        workflow.emit('response');
+      }
+      
+    });
+  });
+
+  workflow.emit('validate');
+}
+
 module.exports.updateCourse = function (req, res) {
   var workflow = req.app.utility.workflow(req, res);
 
@@ -40,7 +103,7 @@ module.exports.updateCourse = function (req, res) {
       if(req.body.action == "delete") {
         course.remove();
 
-        workflow.emit('response');
+        return workflow.emit('response');
       }
       else if(req.body.action = "update") {
         req.app.db.models.Course.findOne({name: req.body.courseName}, function (err, course2) {
@@ -268,7 +331,7 @@ module.exports.addLecture = function (req, res) {
                if(err) {
                   return workflow.emit('exception', err);
                 }
-              var newPath = __dirname + "\\uploads\\" + newLecture._id + ".pdf";
+              var newPath = __dirname + "\\pdfjs\\test\\pdfs\\uploads\\" + newLecture._id + ".pdf";
               console.log(req.files.pdf.path);
               console.log(newPath);
               console.log(data);
@@ -276,6 +339,7 @@ module.exports.addLecture = function (req, res) {
                 if(err) {
                   return workflow.emit('exception', err);
                 }
+                workflow.outcome.errfor._id = newLecture._id;
                 workflow.emit('response');
                 //res.redirect("back");
               });

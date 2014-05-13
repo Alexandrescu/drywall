@@ -7,6 +7,7 @@
 var courses = [];
 var lectures = [];
 var json;
+var PDFJS = "http://localhost:8888/web/viewer.html";
 
 // when DOM elements have been made
 $(document).ready(function(){
@@ -20,8 +21,15 @@ $(document).ready(function(){
 
 			  $.each(courses, function(index,item){
 			    var course = item.name;
+			    lectures[index] = item.lectures;
+
 				$('.courses').append('<div class="course panel panel-default" courseIndex="'+index+'">'+course+'</div>');
 				$('.lectures').append('<div courseIndex="'+index+'"></div>');
+				showLectures(index);
+			  });
+
+			  $.each($('.lectures').children(),function(index,course){
+				$(course).hide();
 			  });
 		    },
 		});
@@ -49,6 +57,38 @@ $(document).ready(function(){
 			}});
 		}
 	});
+
+	function showLectures(cid) {
+		var thisLectures = lectures[cid];
+		$.each(thisLectures, function(entry,item){
+//<input type="file" id="file'+uniqueId+'" class="inputlecture"/><br/>\
+
+			//alert(JSON.stringify(item));
+			/*jshint multistr: true */
+			var uniqueId = entry + cid * 100;
+			var str = '\
+			<div class="panel panel-default lecture" lecture="'+uniqueId+'">\
+				<div class="panel-heading">\
+					<h4 class="panel-title">\
+			        	<a contentEditable data-toggle="collapse" data-parent="#accordion" id="lecturename'+uniqueId+'" href="#'+uniqueId+'">\
+			          		' + item.title.split('+').join(' ') + ' </a>\
+			        	<a class="arrow" data-toggle="collapse" data-parent="#accordion" href="#'+uniqueId+'" style="float:right"><i class="fa fa-caret-down"></i></a>\
+			      	</h4>\
+			    </div>\
+			    <div id="'+uniqueId+'" class="panel-collapse collapse">\
+			     	<div class="panel-body">\
+			     		Has PDF. <br>\
+		      		<button id="startLecture" class="btn btn-success">Start lecture</button>\
+		      		<button id="saveLecture" class="btn btn-warning">Save lecture</button>\
+			      		<button type="submit" id="deleteLecture" class="btn btn-danger" style="float:right">Delete Lecture</button>\
+			      	</div>\
+			    </div>\
+			  </div>';
+
+			$('.lectures').find('[courseIndex="'+cid+'"]').append(str);
+			$('.lecture[lecture="'+uniqueId+'"] div h4 a').focus();
+		});
+	}
 
 	$('.courses').on("click",".course",function(){
 		var x = $(this);
@@ -172,34 +212,34 @@ $(document).ready(function(){
 	// Eventlisteners on lectures
 
 	$('#addLecture').click(function(){
-		alert( $('.course.selected').hasClass("new"));
+		var cid = $('#coursename').attr('courseIndex');
+		var uniqueId = lectures[cid].length + 100 * cid;
 		/*jshint multistr: true */
 		var str = '\
-		<div class="panel panel-default lecture" lecture="'+lectures.length+'">\
+		<div class="panel panel-default lecture" lecture="'+uniqueId+'">\
 			<div class="panel-heading">\
 				<h4 class="panel-title">\
-		        	<a contentEditable data-toggle="collapse" data-parent="#accordion" id="lecturename'+lectures.length+'" href="#'+lectures.length+'">\
+		        	<a contentEditable data-toggle="collapse" data-parent="#accordion" id="lecturename'+uniqueId+'" href="#'+uniqueId+'">\
 		          		Unnamed Lecture\
 		        	</a>\
-		        	<a class="arrow" data-toggle="collapse" data-parent="#accordion" href="#'+lectures.length+'" style="float:right"><i class="fa fa-caret-down"></i></a>\
+		        	<a class="arrow" data-toggle="collapse" data-parent="#accordion" href="#'+uniqueId+'" style="float:right"><i class="fa fa-caret-down"></i></a>\
 		      	</h4>\
 		    </div>\
-		    <div id="'+lectures.length+'" class="panel-collapse collapse">\
+		    <div id="'+uniqueId+'" class="panel-collapse collapse">\
 		     	<div class="panel-body">\
-		      		<input type="file" class="inputlecture"/><br/>\
-		      		<button id="startLecture" class="btn btn-warning">Start lecture</button>\
+		      		<input type="file" id="file'+uniqueId+'" class="inputlecture"/><br/>\
+		      		<button id="startLecture" class="btn btn-success">Start lecture</button>\
+		      		<button id="saveLecture" class="btn btn-warning">Save lecture</button>\
 		      		<button type="submit" id="deleteLecture" class="btn btn-danger" style="float:right">Delete Lecture</button>\
 		      	</div>\
 		    </div>\
 		  </div>';
 
-		var cid = $('#coursename').attr('courseIndex');
 		$('.lectures').find('[courseIndex="'+cid+'"]').append(str);
-		console.log(lectures.length);
-		$('.lecture[lecture="'+lectures.length+'"] div h4 a').focus();
-		selectText('lecturename'+lectures.length);
+		$('.lecture[lecture="'+uniqueId+'"] div h4 a').focus();
+		selectText('lecturename'+uniqueId);
 
-		lectures.push([lectures.length,"Unnamed Lecture",""]);
+		lectures[cid].push({title: "Unnamed Lecture"});
 	});
 
 	$('.lectures').on('hidden.bs.collapse','.lecture', function () {
@@ -211,16 +251,93 @@ $(document).ready(function(){
 	  // do something…
 	});
 	$('.lectures').on('click','#deleteLecture',function(){
+		var theLect = $(this).closest('.lecture');
+		saveLecture(parseInt($('#coursename').attr('courseIndex')), parseInt(theLect.attr('lecture')), $('#lecturename' + theLect.attr('lecture'))[0].innerHTML, true, false);
+
 		$(this).closest('.lecture').remove();
 	});
 	
 	$('.lectures').on('click','#startLecture',function(){
+		var theLect = $(this).closest('.lecture');
+		
+		saveLecture(parseInt($('#coursename').attr('courseIndex')), parseInt(theLect.attr('lecture')), $('#lecturename' + theLect.attr('lecture'))[0].innerHTML, false, true);
 		//for(var key in $(this).closest('.lecture').parent()) {
 		//  console.log(key);
 		//}
 
 		//alert(($(this).closest('.lecture')).parent().data('lecture'));
 	});
+
+	$('.lectures').on('click','#saveLecture',function(){
+		var theLect = $(this).closest('.lecture');
+		//alert(theLect.attr('lecture'));
+		//alert($('#lecturename' + theLect.attr('lecture'))[0].innerHTML);
+
+		saveLecture(parseInt($('#coursename').attr('courseIndex')), parseInt(theLect.attr('lecture')), $('#lecturename' + theLect.attr('lecture'))[0].innerHTML, false, false);
+	
+		//for(var key in $(this).closest('.lecture').parent()) {
+		//  console.log(key);
+		//}
+
+		//alert(($(this).closest('.lecture')).parent().data('lecture'));
+	});
+
+
+	function startLecture(cid, index) {
+		window.location.href = PDFJS + "?file=/test/pdfs/uploads/" + lectures[cid][index - 100 * cid]._id + ".pdf";
+	}
+
+	function saveLecture(cid, index, name, del, call) {
+		
+		if(lectures[cid][index - 100 * cid]._id  !== undefined) {
+			//alert(lectures[cid][index - 100 * cid]._id);
+			var theAction;
+			if(del) {
+				theAction =  "delete"
+			}
+			else {
+				theAction = "update";
+			}
+
+			$.ajax({
+	  			'type': "POST",
+			    'url': '../updateLecture/',
+			    'data': {lectureId: lectures[cid][index - 100 * cid]._id,lectureTitle: name, action: theAction},
+			    'success': function(jsonData) {
+			    	if(call) {
+		    			startLecture(cid, index);
+		    		}	
+			    }
+			});
+		}
+		else {
+			//alert( courses[cid]._id);
+			var formData = new FormData();
+
+			formData.append("courseId", courses[cid]._id);
+			formData.append("lectureTitle", name);
+			formData.append("pdf", ($('#file' + index))[0].files[0]);
+
+			$.ajax({
+  			'type': "POST",
+		    'url': '../postLecture/',
+		    'async': false,
+        	'contentType': false,
+            'processData': false,
+		    'enctype': 'multipart/form-data',
+		    'data' : formData,
+		    //'data': {courseId: cid, lectureTitle:name, pdf: ($('#file' + index)).files},
+		    'success': function(jsonData) {
+		    //	alert(JSON.stringify(jsonData));
+		    	alert(jsonData.errfor._id);
+		    	lectures[cid][index - 100 * cid]._id = jsonData.errfor._id;
+		    	if(call) {
+		    		startLecture(cid, index);
+		    	}
+		    }
+			});
+		}
+	}
 });
 
 function selectText(element) {
@@ -257,10 +374,4 @@ function addCourse(name,id){
 	courses.push([id,name,new course(name)]);
 }
 */
-  $('.day-of-year').text(moment().format('DDD'));
-  $('.day-of-month').text(moment().format('D'));
-  $('.week-of-year').text(moment().format('w'));
-  $('.day-of-week').text(moment().format('d'));
-  $('.week-year').text(moment().format('gg'));
-  $('.hour-of-day').text(moment().format('H'));
 }());

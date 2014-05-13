@@ -1,11 +1,22 @@
 module.exports = function(io, mongoose, app) {
   var clients = app.basket;
-  var liveLectures = app.liveLectures;
+  //var liveLectures = app.liveLectures;
 
   io.sockets.on('connection', function (socket) {
     //var workflow = app.utility.apiflow(req, res);
+
+    var lecs = [];
+
+    for(entry in app.liveLectures) {
+      lecs.push(entry);
+      console.log(entry);
+    } 
+
+    socket.emit('lectures', {lectures: lecs});
+    
     socket.on('setLive', function(data) {
-      if(data.hasOwnProperty("token") && data.hasOwnProperty("lectureId")) {
+      //if(data.hasOwnProperty("token") && data.hasOwnProperty("lectureId")) {
+      if(data.hasOwnProperty("lectureId")) {
         console.log("going in");
 
         app.db.models.Lecture.
@@ -16,14 +27,15 @@ module.exports = function(io, mongoose, app) {
           if(lecture)
             app.db.models.User.populate(lecture, "course.creator", function(user, err){
 
+              clients[socket.id] = data;
 
-              if(lecture.course.creator.token == data.token) {
+              //if(lecture.course.creator.token == data.token) {
                 socket.set(data.lectureId, socket.id);
-                liveLectures[data.lectureId] = socket.id;
+                app.liveLectures[data.lectureId] = socket.id;
 
                 socket.broadcast.emit('lectureLive', {lectureId: data.lectureId});
                 console.log("reaches");
-              }
+              //}
             
 
             });
@@ -42,13 +54,13 @@ module.exports = function(io, mongoose, app) {
         errors : []
       };
         
-      if(data.hasOwnProperty("token") && data.hasOwnProperty("lectureId") && liveLectures.hasOwnProperty(data.lectureId)){
+      if(data.hasOwnProperty("token") && data.hasOwnProperty("lectureId") && app.liveLectures.hasOwnProperty(data.lectureId)){
         clients[socket.id] = data;
 
         for(entry in clients) {
           console.log(entry + " has token " + clients[entry].token + " and lectureId " + clients[entry].lectureId);  
         }
-        for(entry in liveLectures) {
+        for(entry in app.liveLectures) {
           console.log("lecture" + entry);
         } 
 
@@ -62,7 +74,7 @@ module.exports = function(io, mongoose, app) {
           response.success = true;
           if(questions) response.result.question = questions;
 
-          response.result.lectures = JSON.stringify(liveLectures);
+          response.result.lectures = JSON.stringify(app.liveLectures);
 
           return socket.emit('questions', response);
         });
@@ -117,7 +129,7 @@ module.exports = function(io, mongoose, app) {
                     lecture.questions.push(newQuestion);
                     lecture.save();
                     response.success = true;
-                    io.sockets.socket(liveLectures[client.lectureId]).emit("newQuestion", newQuestion);
+                    io.sockets.socket(app.liveLectures[client.lectureId]).emit("newQuestion", newQuestion);
                   }
                   else response.errors.push({notFound : "question"});
 
@@ -152,7 +164,7 @@ module.exports = function(io, mongoose, app) {
       if(client)    
         socket.get(client.lectureId, function(err, socketId){
           if(socketId == socket.id) {
-            delete liveLectures[client.lectureId];
+            delete app.liveLectures[client.lectureId];
             for(entry in clients) {
               if(clients[entry].lectureId == client.lectureId) 
                 io.sockets.socket(entry).emit("lecturerDead", {});
