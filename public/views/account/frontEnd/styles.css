@@ -1,0 +1,29 @@
+.course {
+	font-size:15px;
+	background:#e7e7e7;
+	padding:9px;
+	//padding-left:15px;
+	margin-bottom:5px;
+}
+
+.course.live {
+	background:red;
+}
+
+.course.selected {
+	background:royalblue;
+	color:white;
+}
+
+.courseops {
+	margin-top:30px;
+}
+
+.courseops div {
+	text-align: center;
+}
+
+h3 {
+	margin-top:0px;
+	margin-bottom:10px;
+}

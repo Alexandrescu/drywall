@@ -13,4 +13,10 @@ exports = module.exports = function(app, mongoose) {
   require('./schema/AdminGroup')(app, mongoose);
   require('./schema/Account')(app, mongoose);
   require('./schema/LoginAttempt')(app, mongoose);
+
+  //api docs
+  require('./schema/University')(app, mongoose);
+  require('./schema/Course')(app, mongoose);
+  require('./schema/Lecture')(app, mongoose);
+  require('./schema/Question')(app, mongoose);
 };

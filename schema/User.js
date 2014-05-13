@@ -6,9 +6,13 @@ exports = module.exports = function(app, mongoose) {
     password: String,
     email: { type: String, unique: true },
     roles: {
+      lecturer: Boolean,
       admin: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' },
       account: { type: mongoose.Schema.Types.ObjectId, ref: 'Account' }
     },
+    institution: [{type: mongoose.Schema.Types.ObjectId, ref: 'University' }],
+    token: String,
+    coursesSubscribed: [{type:mongoose.Schema.Types.ObjectId, ref: 'Course'}],
     isActive: String,
     timeCreated: { type: Date, default: Date.now },
     resetPasswordToken: String,
@@ -28,12 +32,20 @@ exports = module.exports = function(app, mongoose) {
       return true;
     }
 
+    if(role === "lecturer" && this.roles.lecturer) {
+      return true;
+    }
+
     return false;
   };
   userSchema.methods.defaultReturnUrl = function() {
     var returnUrl = '/';
     if (this.canPlayRoleOf('account')) {
       returnUrl = '/account/';
+    }
+
+    if (this.canPlayRoleOf('lecturer')) {
+      returnUrl = '/lecturer/';
     }
 
     if (this.canPlayRoleOf('admin')) {

@@ -1,0 +1,15 @@
+extends ../layouts/default
+
+block head
+  title Drywall is Running
+
+block neck
+  link(rel='stylesheet', href='/views/index.min.css?#{cacheBreaker}')
+
+block body
+  div.jumbotron
+    h3 Success
+    form(action="/postCourse/", method="post", enctype="multipart/form-data")	
+    | Username:
+      input(type='text', name='user')
+      input(type='submit', value='Submit')

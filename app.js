@@ -82,6 +82,8 @@ app.configure(function(){
   }));
   app.use(passport.initialize());
   app.use(passport.session());
+
+  app.use(express.multipart());
   helmet.defaults(app);
 
   //response locals
@@ -121,8 +123,21 @@ app.utility = {};
 app.utility.sendmail = require('drywall-sendmail');
 app.utility.slugify = require('drywall-slugify');
 app.utility.workflow = require('drywall-workflow');
+app.utility.apiflow = require('apiworkflow');
+
+
+var socketBasket = [];
+app.basket = socketBasket;
+
+var liveLectures = [];
+app.liveLectures = liveLectures;
 
 //listen up
 app.server.listen(app.get('port'), function(){
   //and... we're live
+  console.log("Here we can add the socket");
+  var api = require("./api/socket.js");
+
+  api.startAPI(app, mongoose, passport);
 });
+

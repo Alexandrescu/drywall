@@ -1,46 +1,30 @@
 extends ../../layouts/account
 
 block head
-  title Account Area
+  title Students's Area
 
 block neck
   link(rel='stylesheet', href='/views/account/index.min.css?#{cacheBreaker}')
+  
+
+  link(rel='stylesheet', href='//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css')
+  link(href='//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', rel='stylesheet')
+  link(rel='stylesheet', href='/views/account/frontEnd/main.css')
+  link(rel='stylesheet', href='/views/account/frontEnd/styles.css')
+
 
 block feet
-  script(src='/views/account/index.min.js?#{cacheBreaker}')
+  script(src='http://localhost:3000/socket.io/socket.io.js')
+  script(src='/views/account/index.js?#{cacheBreaker}')
+  script(src='https://code.jquery.com/jquery-2.1.0.min.js')
+  script(src='//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js')
 
 block body
-  div.row
-    div.col-sm-6
-      div.page-header
-        h1 My Account
-      div.row
-        div.col-sm-4
-          div.well.stat
-            div.stat-value.day-of-year --
-            div.stat-label Day of Year
-        div.col-sm-4
-          div.well.stat
-            div.stat-value.day-of-month --
-            div.stat-label Day of Month
-        div.col-sm-4
-          div.well.stat
-            div.stat-value.week-of-year --
-            div.stat-label Week of Year
-      div.row
-        div.col-sm-4
-          div.well.stat
-            div.stat-value.day-of-week --
-            div.stat-label Day of Week
-        div.col-sm-4
-          div.well.stat
-            div.stat-value.week-year --
-            div.stat-label Week Year
-        div.col-sm-4
-          div.well.stat
-            div.stat-value.hour-of-day --
-            div.stat-label Hour of Day
-    div.col-sm-6.special
-      div.page-header
-        h1 Go Faster Everyday
-      i.fa.fa-dashboard.super-awesome
+  .content#content
+        .row
+          .col-md-6
+            h3 Courses
+            .courses
+          .col-md-6
+            span#coursename(contentEditable = 'false')
+            .lectures

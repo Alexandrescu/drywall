@@ -1,20 +1,23 @@
 'use strict';
 
+
+
 exports = module.exports = function(app, passport) {
-  var LocalStrategy = require('passport-local').Strategy,
+  var BasicStrategy = require('passport-http').BasicStrategy,
+      LocalStrategy = require('passport-local').Strategy,
+      BearerStrategy = require('passport-http-bearer').Strategy,
       TwitterStrategy = require('passport-twitter').Strategy,
       GitHubStrategy = require('passport-github').Strategy,
       FacebookStrategy = require('passport-facebook').Strategy,
       GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
-  passport.use(new LocalStrategy(
-    function(username, password, done) {
+  function findUsers(username, password, done) {
       var conditions = { isActive: 'yes' };
       if (username.indexOf('@') === -1) {
         conditions.username = username;
       }
       else {
-        conditions.email = username;
+        conditions.email = usernames;
       }
 
       app.db.models.User.findOne(conditions, function(err, user) {
@@ -38,8 +41,32 @@ exports = module.exports = function(app, passport) {
           return done(null, user);
         });
       });
-    }
-  ));
+  }
+
+  passport.use(new LocalStrategy(findUsers));
+  passport.use(new BasicStrategy(findUsers));
+
+  passport.use(new BearerStrategy(
+  //function(username, password, done) {
+  function (token, done) {
+
+  var conditions = { token: token }; 
+  
+  app.db.models.User.findOne(conditions, function(err, user) {
+        if (err) {
+          return done(err);
+        }
+
+        if (!user) {
+          return done(null, false, { message: 'Unknown user' });
+        }
+
+        return done(null, user);
+      });
+  }
+        
+));
+  
 
   if (app.get('twitter-oauth-key')) {
     passport.use(new TwitterStrategy({
